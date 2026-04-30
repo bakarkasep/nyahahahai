@@ -1,0 +1,1005 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>💛 Dimaafin ya? | Nisa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ========== LAYAR PEMBUKA GELAP (SPLASH SCREEN) ========== */
+      .splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000000;
+        background: radial-gradient(circle at center, #0a0a0a, #000000);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 32px;
+        transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        opacity: 1;
+        pointer-events: auto;
+        backdrop-filter: blur(2px);
+      }
+      .splash-screen.hide {
+        opacity: 0;
+        pointer-events: none;
+        visibility: visible; /* tetap di atas tapi transparan */
+        transition: opacity 0.6s ease;
+      }
+      .splash-content {
+        text-align: center;
+        padding: 30px 24px;
+        max-width: 360px;
+        width: 85%;
+        border: 1px solid rgba(255, 180, 100, 0.3);
+        border-radius: 64px;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(12px);
+        box-shadow:
+          0 0 40px rgba(0, 0, 0, 0.8),
+          0 0 0 2px #ffb56b20 inset;
+        animation: pulseDark 2s infinite;
+      }
+      @keyframes pulseDark {
+        0% {
+          box-shadow:
+            0 0 0 0 rgba(255, 140, 90, 0.2),
+            0 0 40px rgba(0, 0, 0, 0.8);
+          border-color: rgba(255, 180, 100, 0.2);
+        }
+        100% {
+          box-shadow:
+            0 0 0 3px rgba(255, 140, 90, 0.3),
+            0 0 50px rgba(0, 0, 0, 0.9);
+          border-color: rgba(255, 180, 100, 0.6);
+        }
+      }
+      .splash-title {
+        font-family: "Playfair Display", serif;
+        font-size: 28px;
+        font-weight: 800;
+        color: #fdd6a8;
+        letter-spacing: 2px;
+        margin-bottom: 24px;
+        text-shadow: 0 0 10px #ffa559;
+      }
+      .splash-warning {
+        font-family: "Inter", monospace;
+        font-weight: 600;
+        font-size: 18px;
+        background: #1f1a14;
+        display: inline-block;
+        padding: 10px 18px;
+        border-radius: 60px;
+        letter-spacing: 0.5px;
+        color: #ffb485;
+        border-left: 4px solid #ff7e4a;
+        margin: 12px 0;
+      }
+      .splash-desc {
+        color: #bbb0a0;
+        font-size: 15px;
+        margin: 20px 0 10px;
+        line-height: 1.5;
+      }
+      .splash-btn {
+        background: linear-gradient(135deg, #29211a, #1e1711);
+        border: 2px solid #ff9f6e;
+        padding: 14px 24px;
+        border-radius: 80px;
+        font-weight: 800;
+        font-size: 18px;
+        color: #ffd7b0;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 28px;
+        font-family: "Inter", sans-serif;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        width: 100%;
+      }
+      .splash-btn:hover {
+        background: #3e2c20;
+        transform: scale(1.02);
+        border-color: #ffb77c;
+        color: #fff0df;
+        box-shadow: 0 0 15px rgba(255, 120, 70, 0.4);
+      }
+      .splash-btn:active {
+        transform: scale(0.98);
+      }
+      .lock-icon {
+        font-size: 56px;
+        filter: drop-shadow(0 0 6px #ff8855);
+        margin-bottom: 8px;
+      }
+
+      /* ========== SEMUA STYLE ASLI (TIDAK BERUBAH) ========== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --warm-bg: #fff9f0;
+        --coral: #ff7e5e;
+        --sunset: #feb47b;
+        --deep-wood: #4a2c1a;
+        --honey: #ffcd7e;
+        --soft-sand: #fde9cf;
+        --rose: #ffa69e;
+        --olive: #b98c5f;
+      }
+
+      body {
+        background: linear-gradient(145deg, #fff7ea 0%, #ffe8d4 100%);
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+        cursor: none;
+        position: relative;
+      }
+
+      /* custom cursor */
+      .cursor {
+        width: 20px;
+        height: 20px;
+        background: radial-gradient(circle, var(--coral), var(--sunset));
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.12s,
+          width 0.2s,
+          height 0.2s,
+          background 0.2s;
+        box-shadow: 0 0 12px rgba(255, 110, 64, 0.6);
+        mix-blend-mode: normal;
+        backdrop-filter: blur(1px);
+      }
+      .cursor.big {
+        width: 56px;
+        height: 56px;
+        background: radial-gradient(circle, var(--honey), var(--coral));
+        box-shadow: 0 0 28px #ffb347;
+      }
+
+      /* floating blobs */
+      .blob {
+        position: fixed;
+        border-radius: 70% 30% 60% 40% / 45% 40% 60% 55%;
+        background: radial-gradient(circle at 30% 40%, var(--honey), #ffdca8);
+        filter: blur(45px);
+        opacity: 0.4;
+        pointer-events: none;
+        z-index: 0;
+        animation: blobFlow 18s infinite alternate;
+      }
+      .blob1 {
+        width: 480px;
+        height: 480px;
+        top: -120px;
+        right: -100px;
+        background: radial-gradient(#ffc38b, #ff9f6e);
+        animation-duration: 22s;
+      }
+      .blob2 {
+        width: 360px;
+        height: 360px;
+        bottom: -100px;
+        left: -70px;
+        background: radial-gradient(#fee3b5, #ffb882);
+        animation-duration: 19s;
+      }
+      .blob3 {
+        width: 280px;
+        height: 280px;
+        bottom: 30%;
+        right: 15%;
+        background: radial-gradient(#ffd2a5, #ffbc88);
+        animation-duration: 25s;
+        opacity: 0.3;
+      }
+      @keyframes blobFlow {
+        0% {
+          border-radius: 70% 30% 60% 40% / 45% 40% 60% 55%;
+          transform: translateY(0px) scale(1) rotate(0deg);
+        }
+        100% {
+          border-radius: 40% 60% 30% 70% / 55% 45% 55% 45%;
+          transform: translateY(-30px) scale(1.08) rotate(6deg);
+        }
+      }
+
+      .grain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.3;
+      }
+
+      .page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 70px 40px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 70px;
+        align-items: center;
+        position: relative;
+        z-index: 10;
+      }
+
+      .left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+      }
+      .floating-card {
+        background: rgba(255, 248, 235, 0.7);
+        backdrop-filter: blur(8px);
+        border-radius: 68px;
+        padding: 30px 24px;
+        box-shadow: 0 20px 35px -15px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 190, 130, 0.6);
+      }
+      .face-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+      .face-circle {
+        width: 280px;
+        height: 280px;
+        background: radial-gradient(circle at 35% 30%, #ffcf8a, #ffb562);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s cubic-bezier(0.34, 1.2, 0.8, 1);
+        cursor: pointer;
+        border: 5px solid var(--deep-wood);
+        box-shadow:
+          12px 12px 0 #3b2a1f,
+          0 0 0 3px #ffda99 inset;
+        animation: softGlow 3.5s infinite alternate;
+      }
+      @keyframes softGlow {
+        0% {
+          box-shadow:
+            12px 12px 0 #3b2a1f,
+            0 0 0 2px #ffddb0 inset;
+          transform: scale(1);
+        }
+        100% {
+          box-shadow:
+            14px 14px 0 #2f2116,
+            0 0 0 5px #ffeca7 inset;
+          transform: scale(1.01);
+        }
+      }
+      .face-circle svg {
+        width: 170px;
+        height: 170px;
+        filter: drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.1));
+      }
+      .badge-new {
+        position: absolute;
+        top: -15px;
+        right: 6px;
+        background: #ff8c5a;
+        color: white;
+        font-weight: 800;
+        font-size: 13px;
+        padding: 7px 16px;
+        border-radius: 50px;
+        transform: rotate(8deg);
+        border: 3px solid white;
+        box-shadow: 0 5px 0 #5c2e16;
+        font-family: "Inter", sans-serif;
+        letter-spacing: 1px;
+      }
+
+      .emojis-float {
+        display: flex;
+        gap: 20px;
+        font-size: 38px;
+        background: rgba(255, 242, 218, 0.9);
+        padding: 12px 28px;
+        border-radius: 90px;
+        backdrop-filter: blur(4px);
+        animation: bounceShy 2s infinite;
+      }
+      @keyframes bounceShy {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      .right {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+      .tag-flair {
+        background: #fff3e4;
+        padding: 8px 20px;
+        border-radius: 50px;
+        width: fit-content;
+        border-left: 4px solid var(--coral);
+        font-weight: 600;
+        font-size: 13px;
+        color: #b45a38;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.02);
+      }
+      h1 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(54px, 9vw, 88px);
+        font-weight: 800;
+        color: #2f2118;
+        line-height: 1.1;
+        text-shadow: 2px 2px 0 rgba(255, 180, 100, 0.4);
+      }
+      .highlight {
+        background: linear-gradient(120deg, #ffb56b 0%, #ff8c53 80%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        position: relative;
+        display: inline-block;
+      }
+      .highlight::after {
+        content: "✨";
+        font-size: 40px;
+        position: absolute;
+        top: -20px;
+        right: -35px;
+        opacity: 0.6;
+        animation: spark 2.4s infinite;
+      }
+      @keyframes spark {
+        0% {
+          transform: rotate(0deg) scale(0.8);
+          opacity: 0.4;
+        }
+        100% {
+          transform: rotate(10deg) scale(1.2);
+          opacity: 1;
+        }
+      }
+
+      .msg-card {
+        background: rgba(255, 250, 240, 0.95);
+        border-radius: 42px;
+        border: 2px solid #f5cfaa;
+        padding: 28px 32px;
+        box-shadow: 12px 14px 0 #c98f5c;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        backdrop-filter: blur(2px);
+      }
+      .msg-card:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 16px 18px 0 #b37348;
+      }
+      .msg-text {
+        font-size: 18px;
+        line-height: 1.65;
+        font-weight: 400;
+        color: #38281d;
+        outline: none;
+        font-family: "Inter", sans-serif;
+        word-break: break-word;
+        min-height: 100px;
+      }
+      .edit-hint {
+        margin-top: 22px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ad825e;
+        font-weight: 500;
+        border-top: 1px dashed #ffcf9a;
+        padding-top: 16px;
+      }
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: #ff7a42;
+        border-radius: 50%;
+        animation: pulseRed 1.2s infinite;
+      }
+      @keyframes pulseRed {
+        0% {
+          opacity: 0.3;
+          transform: scale(0.8);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+
+      /* TOMBOL UTAMA & MODAL */
+      .btn-forgive {
+        background: #ffd09c;
+        border: 2px solid #482e1f;
+        padding: 14px 32px;
+        border-radius: 60px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 18px;
+        color: #2d1f14;
+        cursor: pointer;
+        transition: 0.1s linear;
+        box-shadow: 5px 6px 0 #7b4a2a;
+        width: fit-content;
+        font-family: "Inter", sans-serif;
+      }
+      .btn-forgive:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #7b4a2a;
+      }
+
+      /* MODAL OVERLAY */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(6px);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        visibility: hidden;
+        opacity: 0;
+        transition:
+          visibility 0.2s,
+          opacity 0.2s;
+      }
+      .modal-overlay.show {
+        visibility: visible;
+        opacity: 1;
+      }
+      .modal-card {
+        background: #fff7ef;
+        border-radius: 56px;
+        max-width: 460px;
+        width: 85%;
+        padding: 36px 28px;
+        text-align: center;
+        border: 3px solid #ffc489;
+        box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+        animation: modalPop 0.3s cubic-bezier(0.34, 1.2, 0.8, 1);
+        position: relative;
+      }
+      @keyframes modalPop {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .modal-question {
+        font-size: 32px;
+        font-weight: 800;
+        font-family: "Playfair Display", serif;
+        color: #4a2c1a;
+        margin-bottom: 16px;
+      }
+      .modal-desc {
+        color: #7f5a3e;
+        margin-bottom: 32px;
+      }
+      .modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+      .yes-btn,
+      .no-btn {
+        border: none;
+        padding: 12px 32px;
+        border-radius: 60px;
+        font-size: 20px;
+        font-weight: bold;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+        transition: 0.1s linear;
+        box-shadow: 3px 4px 0 #886b4b;
+      }
+      .yes-btn {
+        background: #a7e0b0;
+        color: #2a5c2e;
+        border: 2px solid #3e6b3e;
+      }
+      .yes-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 #886b4b;
+      }
+      .no-btn {
+        background: #ffb4a2;
+        color: #611f0c;
+        border: 2px solid #a3452a;
+        position: relative;
+        transition:
+          left 0.08s linear,
+          top 0.08s linear,
+          right 0.08s,
+          bottom 0.08s;
+      }
+      /* efek kabur untuk no */
+      .close-icon {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #b07d56;
+        cursor: pointer;
+        display: inline-block;
+      }
+
+      /* pesan mantap float */
+      .mantap-toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #6fbf4c;
+        color: white;
+        font-weight: 800;
+        padding: 18px 36px;
+        border-radius: 80px;
+        font-size: 28px;
+        letter-spacing: 2px;
+        z-index: 10010;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        animation: mantapFly 1.2s ease forwards;
+        font-family: "Playfair Display", serif;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      @keyframes mantapFly {
+        0% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(40px);
+        }
+        30% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0px);
+        }
+        70% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0px);
+        }
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-50px);
+          visibility: hidden;
+        }
+      }
+
+      @media (max-width: 750px) {
+        .page {
+          grid-template-columns: 1fr;
+          gap: 40px;
+          padding: 40px 24px;
+        }
+        .face-circle {
+          width: 230px;
+          height: 230px;
+        }
+        .face-circle svg {
+          width: 130px;
+        }
+        h1 {
+          font-size: 52px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LAYAR PEMBUKA GELAP (SPLASH) -->
+    <div class="splash-screen" id="splashScreen">
+      <div class="splash-content">
+        <div class="lock-icon">🔒</div>
+        <div class="splash-title">⚠️ PRIVASI ⚠️</div>
+        <div class="splash-warning">✦ BUKA WEB INI SAAT SENDIRI, WAJIB ✦</div>
+        <div class="splash-desc">
+          Halaman ini berisi pesan personal. Pastikan tidak ada orang di
+          sekitarmu untuk menjaga kenyamanan.
+        </div>
+        <button class="splash-btn" id="enterAloneBtn">
+          🔓 pencet tombol ini saat sudah sendiri
+        </button>
+      </div>
+    </div>
+
+    <!-- KONTEN UTAMA (TIDAK BERUBAH SEDIKITPUN) -->
+    <div class="cursor" id="cursor"></div>
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+    <div class="grain"></div>
+
+    <div class="page">
+      <div class="left">
+        <div class="floating-card">
+          <div class="face-wrapper">
+            <div class="face-circle" id="faceContainer">
+              <svg
+                viewBox="0 0 160 160"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <ellipse cx="58" cy="68" rx="8" ry="9" fill="#3D2B1F" />
+                <ellipse cx="102" cy="68" rx="8" ry="9" fill="#3D2B1F" />
+                <path
+                  d="M48 54 Q58 48 68 52"
+                  stroke="#3D2B1F"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M92 52 Q102 48 112 54"
+                  stroke="#3D2B1F"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M58 108 Q80 96 102 108"
+                  stroke="#3D2B1F"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  fill="none"
+                  id="mouthLine"
+                />
+                <circle
+                  cx="128"
+                  cy="45"
+                  r="5"
+                  fill="#f6a58c"
+                  stroke="#4f2f1e"
+                  stroke-width="1.5"
+                />
+                <circle
+                  cx="33"
+                  cy="43"
+                  r="3.5"
+                  fill="#f9946e"
+                  stroke="#4f2f1e"
+                  stroke-width="1.2"
+                />
+              </svg>
+            </div>
+            <div class="badge-new">🙏 DIMAAFIN?</div>
+          </div>
+        </div>
+        <div class="emojis-float">
+          <span>🌸</span><span>🍃</span><span>💕</span><span>✨</span>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="tag-flair">⚘ untuk Nisa yang super baik ⚘</div>
+        <h1>Maaf ya,<br /><span class="highlight">Nisa.</span></h1>
+
+        <div class="msg-card" id="msgCard">
+          <div class="msg-text" contenteditable="true" id="editableMsg">
+            saya minta maaf, saya sadar jika saya mungkin mengucapkan sesuatu yg
+            membuat anda marah ataupun sedih, maafin gweh ya?
+          </div>
+          <div class="edit-hint">
+            <span class="pulse-dot"></span> ✏️ klik/edit pesan → lihat keajaiban
+            kecil ✨
+          </div>
+        </div>
+
+        <!-- Tombol DIMAAFIN YA? -->
+        <div class="btn-forgive" id="openModalBtn">🤍 "Dimaafin ya?" 💌</div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI -->
+    <div class="modal-overlay" id="confirmationModal">
+      <div class="modal-card">
+        <div class="modal-question">💬 Dimaafin ya, Nisa?</div>
+        <div class="modal-desc">nisa kan baik orangnya</div>
+        <div class="modal-buttons">
+          <button class="yes-btn" id="yesBtn">✅ YA, DIMAAFIN!</button>
+          <button class="no-btn" id="noBtn">❌ NGGAK</button>
+        </div>
+        <div
+          class="close-icon"
+          id="closeModalBtn"
+          style="margin-top: 24px; cursor: pointer"
+        >
+          ✖️ tutup
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ========== LOGIKA SPLASH SCREEN ==========
+      const splashScreen = document.getElementById("splashScreen");
+      const enterBtn = document.getElementById("enterAloneBtn");
+
+      // Mencegah scroll saat splash aktif
+      document.body.style.overflow = "hidden";
+
+      function showMainContent() {
+        splashScreen.classList.add("hide");
+        // Setelah animasi fade-out, hapus splash dari akses dan aktifkan scroll
+        setTimeout(() => {
+          splashScreen.style.display = "none";
+          document.body.style.overflow = ""; // kembalikan scroll
+        }, 600);
+      }
+
+      enterBtn.addEventListener("click", () => {
+        showMainContent();
+      });
+
+      // ---------- ELEMENTS MAIN (TIDAK BERUBAH) ----------
+      const cursor = document.getElementById("cursor");
+      const faceDiv = document.getElementById("faceContainer");
+      const mouthPath = document.getElementById("mouthLine");
+      const editable = document.getElementById("editableMsg");
+      const msgCardDiv = document.getElementById("msgCard");
+      const openModalBtn = document.getElementById("openModalBtn");
+      const modalOverlay = document.getElementById("confirmationModal");
+      const yesBtn = document.getElementById("yesBtn");
+      const noBtn = document.getElementById("noBtn");
+      const closeModalBtn = document.getElementById("closeModalBtn");
+
+      let isSmiling = false;
+      let smileTimeout = null;
+
+      // cursor
+      document.addEventListener("mousemove", (e) => {
+        if (cursor) {
+          cursor.style.left = e.clientX + "px";
+          cursor.style.top = e.clientY + "px";
+        }
+      });
+      function addBig() {
+        if (cursor) cursor.classList.add("big");
+      }
+      function removeBig() {
+        if (cursor) cursor.classList.remove("big");
+      }
+      document
+        .querySelectorAll(
+          ".msg-card, .btn-forgive, .face-circle, .emojis-float, .yes-btn, .no-btn",
+        )
+        .forEach((el) => {
+          if (el) {
+            el.addEventListener("mouseenter", addBig);
+            el.addEventListener("mouseleave", removeBig);
+          }
+        });
+
+      // confetti meriah
+      function unleashConfetti(intensity = 70) {
+        const colors = [
+          "#FFB07C",
+          "#FFD966",
+          "#FF8C5A",
+          "#F4A261",
+          "#E9C46A",
+          "#F2C4A0",
+          "#FFB347",
+        ];
+        for (let i = 0; i < intensity; i++) {
+          const conf = document.createElement("div");
+          conf.style.cssText = `
+            position: fixed;
+            left: ${Math.random() * 100}vw;
+            top: -20px;
+            pointer-events: none;
+            z-index: 10050;
+            width: ${8 + Math.random() * 12}px;
+            height: ${6 + Math.random() * 12}px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: ${Math.random() > 0.6 ? "50%" : "2px"};
+            opacity: 0.9;
+            animation: fallConfettiF  ${1.5 + Math.random() * 2}s linear forwards;
+          `;
+          document.body.appendChild(conf);
+          setTimeout(() => conf.remove(), 3000);
+        }
+        for (let i = 0; i < 18; i++) {
+          const heart = document.createElement("div");
+          heart.innerHTML = "💖";
+          heart.style.cssText = `position:fixed; left:${Math.random() * 100}vw; bottom:-20px; font-size:${18 + Math.random() * 28}px; pointer-events:none; z-index:10051; animation: floatHeartF 2.2s ease-out forwards; filter: drop-shadow(0 0 4px #ff6f42);`;
+          document.body.appendChild(heart);
+          setTimeout(() => heart.remove(), 2200);
+        }
+      }
+
+      const styleSheet = document.createElement("style");
+      styleSheet.textContent = `
+        @keyframes fallConfettiF { 0% { transform: translateY(0vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(800deg); opacity: 0; } }
+        @keyframes floatHeartF { 0% { transform: translateY(0) scale(0.7); opacity: 1; } 100% { transform: translateY(-100vh) scale(1.4); opacity: 0; } }
+      `;
+      document.head.appendChild(styleSheet);
+
+      function setSmileTemporary() {
+        if (smileTimeout) clearTimeout(smileTimeout);
+        if (!isSmiling) {
+          mouthPath.setAttribute("d", "M48 98 Q80 128 112 98");
+          faceDiv.style.transform = "scale(1.02)";
+          faceDiv.style.background =
+            "radial-gradient(circle at 35% 30%, #ffda9e, #ffb145)";
+          isSmiling = true;
+          unleashConfetti(45);
+          const blush = document.createElement("div");
+          blush.innerText = "😳💛";
+          blush.style.cssText =
+            "position:fixed; left:45%; top:38%; font-size:42px; pointer-events:none; z-index:10000; animation: fadeUpBlush 1s forwards;";
+          document.body.appendChild(blush);
+          setTimeout(() => blush.remove(), 1000);
+        }
+        smileTimeout = setTimeout(() => {
+          if (isSmiling) {
+            mouthPath.setAttribute("d", "M58 108 Q80 96 102 108");
+            faceDiv.style.transform = "scale(1)";
+            faceDiv.style.background =
+              "radial-gradient(circle at 35% 30%, #ffcf8a, #ffb562)";
+            isSmiling = false;
+          }
+        }, 2700);
+      }
+      const fadeStyle = document.createElement("style");
+      fadeStyle.textContent = `@keyframes fadeUpBlush { 0%{ opacity:0; transform: translateY(20px);} 20%{opacity:1;} 100%{opacity:0; transform: translateY(-40px);}}`;
+      document.head.appendChild(fadeStyle);
+
+      msgCardDiv.addEventListener("click", (e) => {
+        if (e.target !== editable && !editable.contains(e.target))
+          setSmileTemporary();
+      });
+      let lastMsg = editable.innerText;
+      editable.addEventListener("input", () => {
+        if (editable.innerText !== lastMsg) {
+          lastMsg = editable.innerText;
+          setSmileTemporary();
+        }
+      });
+
+      let noBtnInterval = null;
+      function startEvadeNoButton() {
+        if (noBtnInterval) clearInterval(noBtnInterval);
+        noBtn.style.position = "relative";
+        noBtn.style.transition = "left 0.07s linear, top 0.07s linear";
+        function teleportNo() {
+          if (!modalOverlay.classList.contains("show")) return;
+          const randomX = (Math.random() - 0.5) * 140 * 2;
+          const randomY = (Math.random() - 0.5) * 100 * 1.5;
+          noBtn.style.left = randomX + "px";
+          noBtn.style.top = randomY + "px";
+          noBtn.style.transform = "rotate(" + (Math.random() * 6 - 3) + "deg)";
+        }
+        teleportNo();
+        noBtnInterval = setInterval(() => {
+          if (!modalOverlay.classList.contains("show")) return;
+          teleportNo();
+        }, 100);
+      }
+      function stopEvadeNoButton() {
+        if (noBtnInterval) {
+          clearInterval(noBtnInterval);
+          noBtnInterval = null;
+        }
+        if (noBtn) {
+          noBtn.style.left = "";
+          noBtn.style.top = "";
+          noBtn.style.transform = "";
+        }
+      }
+      function openModal() {
+        modalOverlay.classList.add("show");
+        startEvadeNoButton();
+        if (noBtn) noBtn.disabled = false;
+      }
+      function closeModal() {
+        modalOverlay.classList.remove("show");
+        stopEvadeNoButton();
+      }
+      openModalBtn.addEventListener("click", openModal);
+      closeModalBtn.addEventListener("click", closeModal);
+
+      yesBtn.addEventListener("click", () => {
+        stopEvadeNoButton();
+        unleashConfetti(120);
+        for (let i = 0; i < 30; i++) {
+          const star = document.createElement("div");
+          star.innerHTML = "✨";
+          star.style.cssText = `position:fixed; left:${Math.random() * 100}vw; top:${Math.random() * 100}vh; font-size:${18 + Math.random() * 30}px; pointer-events:none; z-index:10060; animation: floatHeartF 1.5s forwards;`;
+          document.body.appendChild(star);
+          setTimeout(() => star.remove(), 1500);
+        }
+        const mantapDiv = document.createElement("div");
+        mantapDiv.className = "mantap-toast";
+        mantapDiv.innerHTML = "✨ MANTAP! ✨ 💛";
+        document.body.appendChild(mantapDiv);
+        setTimeout(() => mantapDiv.remove(), 1300);
+        if (smileTimeout) clearTimeout(smileTimeout);
+        mouthPath.setAttribute("d", "M44 96 Q80 136 116 96");
+        faceDiv.style.transform = "scale(1.05)";
+        faceDiv.style.background =
+          "radial-gradient(circle at 35% 30%, #ffeaac, #ffc468)";
+        isSmiling = true;
+        setTimeout(() => {
+          mouthPath.setAttribute("d", "M58 108 Q80 96 102 108");
+          faceDiv.style.transform = "scale(1)";
+          faceDiv.style.background =
+            "radial-gradient(circle at 35% 30%, #ffcf8a, #ffb562)";
+          isSmiling = false;
+        }, 4000);
+        closeModal();
+        const ucapan = document.createElement("div");
+        ucapan.innerText = "🤗 kamu terbaik! (anjay, niat banget gweh) ";
+        ucapan.style.cssText =
+          "position:fixed; bottom:20%; left:50%; transform:translateX(-50%); background:#fff0cf; padding:10px 20px; border-radius:60px; font-weight:bold; z-index:10070; animation:fadeNotif 1.8s forwards; font-size:18px;";
+        document.body.appendChild(ucapan);
+        setTimeout(() => ucapan.remove(), 1800);
+      });
+
+      noBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const tease = document.createElement("div");
+        tease.innerText = "😝 gabisa dipencet kok!";
+        tease.style.cssText =
+          "position:fixed; top:30%; left:50%; background:#ffb485; padding:6px 15px; border-radius:30px; font-size:14px; z-index:10080; animation:fadeNotif 1s forwards;";
+        document.body.appendChild(tease);
+        setTimeout(() => tease.remove(), 1000);
+        const randomX = (Math.random() - 0.5) * 220;
+        const randomY = (Math.random() - 0.5) * 140;
+        noBtn.style.left = randomX + "px";
+        noBtn.style.top = randomY + "px";
+      });
+
+      const notifKey = document.createElement("style");
+      notifKey.textContent = `@keyframes fadeNotif { 0%{opacity:0; transform:translateX(-50%) translateY(20px);} 20%{opacity:1;} 80%{opacity:1;} 100%{opacity:0; transform:translateX(-50%) translateY(-30px);}}`;
+      document.head.appendChild(notifKey);
+      setTimeout(() => setSmileTemporary(), 500);
+    </script>
+  </body>
+</html>
