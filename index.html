@@ -13,7 +13,7 @@
       rel="stylesheet"
     />
     <style>
-      /* ========== OPTIMASI HP: lebih ringan, tidak lag ========== */
+      /* ========== OPTIMASI HP: ringan & anti flicker ========== */
       * {
         margin: 0;
         padding: 0;
@@ -21,7 +21,22 @@
         -webkit-tap-highlight-color: transparent;
       }
 
-      /* disable custom cursor di HP (lebih ringan & tidak mengganggu) */
+      /* GPU acceleration untuk semua elemen bergerak */
+      .blob,
+      .face-circle,
+      .modal-card,
+      .splash-screen,
+      .splash-content,
+      .msg-card,
+      .btn-forgive {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        perspective: 1000px;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+      }
+
+      /* disable custom cursor di HP */
       @media (hover: hover) and (pointer: fine) {
         body {
           cursor: none;
@@ -45,9 +60,6 @@
         --sunset: #feb47b;
         --deep-wood: #4a2c1a;
         --honey: #ffcd7e;
-        --soft-sand: #fde9cf;
-        --rose: #ffa69e;
-        --olive: #b98c5f;
       }
 
       body {
@@ -58,7 +70,7 @@
         position: relative;
       }
 
-      /* custom cursor (hanya untuk desktop) */
+      /* custom cursor (desktop) */
       .cursor {
         width: 20px;
         height: 20px;
@@ -80,12 +92,11 @@
         height: 48px;
       }
 
-      /* floating blobs - reduce blur untuk performa HP */
+      /* floating blobs - blur lebih ringan di HP */
       .blob {
         position: fixed;
         border-radius: 50%;
         background: radial-gradient(circle, var(--honey), #ffdca8);
-        filter: blur(40px);
         opacity: 0.3;
         pointer-events: none;
         z-index: 0;
@@ -125,6 +136,17 @@
           height: 280px;
         }
       }
+      /* blur lebih ringan di HP agar tidak lag */
+      @media (max-width: 768px) {
+        .blob {
+          filter: blur(20px);
+        }
+      }
+      @media (min-width: 769px) {
+        .blob {
+          filter: blur(40px);
+        }
+      }
 
       .grain {
         position: fixed;
@@ -134,7 +156,7 @@
         height: 100%;
         pointer-events: none;
         z-index: 1;
-        opacity: 0.2;
+        opacity: 0.15;
       }
 
       /* ========== LAYAR PEMBUKA GELAP ========== */
@@ -483,8 +505,8 @@
         border: 2px solid #a3452a;
         position: relative;
         transition:
-          left 0.07s linear,
-          top 0.07s linear;
+          left 0.12s ease-out,
+          top 0.12s ease-out;
       }
       .close-icon {
         margin-top: 20px;
@@ -531,7 +553,7 @@
         }
       }
 
-      /* animasi confetti & heart lebih ringan */
+      /* animasi ringan */
       @keyframes fallConfettiF {
         0% {
           transform: translateY(0) rotate(0deg);
@@ -713,7 +735,22 @@
 
     <script>
       (function () {
-        // Splash screen
+        // ========== UTILITY: single event handler (no double click/touch) ==========
+        function safeAddEvent(el, eventType, handler) {
+          if (!el) return;
+          let executed = false;
+          el.addEventListener(eventType, (e) => {
+            e.preventDefault();
+            if (executed) return;
+            executed = true;
+            handler(e);
+            setTimeout(() => {
+              executed = false;
+            }, 200);
+          });
+        }
+
+        // ========== SPLASH SCREEN ==========
         const splashScreen = document.getElementById("splashScreen");
         const enterBtn = document.getElementById("enterAloneBtn");
         document.body.style.overflow = "hidden";
@@ -725,10 +762,15 @@
             document.body.style.overflow = "";
           }, 500);
         }
-        enterBtn.addEventListener("click", showMain);
-        enterBtn.addEventListener("touchstart", showMain);
+        safeAddEvent(enterBtn, "click", showMain);
 
-        // Elements
+        // ========== DETEKSI MOBILE UNTUK CONFETTI RINGAN ==========
+        const isMobile =
+          /iPhone|iPad|iPod|Android|BlackBerry|Opera Mini|IEMobile|Mobile/i.test(
+            navigator.userAgent,
+          );
+
+        // ========== ELEMENTS ==========
         const cursor = document.getElementById("cursor");
         const faceDiv = document.getElementById("faceContainer");
         const mouthPath = document.getElementById("mouthLine");
@@ -743,13 +785,14 @@
         let isSmiling = false;
         let smileTimeout = null;
 
-        // Desktop cursor only
-        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        // ========== DESKTOP CURSOR (ONLY IF HOVER AVAILABLE) ==========
+        if (
+          window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+          cursor
+        ) {
           document.addEventListener("mousemove", (e) => {
-            if (cursor) {
-              cursor.style.left = e.clientX + "px";
-              cursor.style.top = e.clientY + "px";
-            }
+            cursor.style.left = e.clientX + "px";
+            cursor.style.top = e.clientY + "px";
           });
           const bigElements = [
             ".msg-card",
@@ -762,17 +805,20 @@
           bigElements.forEach((sel) => {
             document.querySelectorAll(sel).forEach((el) => {
               el.addEventListener("mouseenter", () =>
-                cursor?.classList.add("big"),
+                cursor.classList.add("big"),
               );
               el.addEventListener("mouseleave", () =>
-                cursor?.classList.remove("big"),
+                cursor.classList.remove("big"),
               );
             });
           });
         } else if (cursor) cursor.style.display = "none";
 
-        // Confetti ringan (tidak overload)
+        // ========== CONFETTI RINGAN (tidak overload di HP) ==========
         function unleashConfetti(intensity = 50) {
+          const count = isMobile
+            ? Math.min(intensity, 22)
+            : Math.min(intensity, 55);
           const colors = [
             "#FFB07C",
             "#FFD966",
@@ -780,22 +826,25 @@
             "#F4A261",
             "#E9C46A",
           ];
-          const count = Math.min(intensity, 60);
+
           for (let i = 0; i < count; i++) {
             const conf = document.createElement("div");
-            conf.style.cssText = `position:fixed; left:${Math.random() * 100}vw; top:-20px; pointer-events:none; z-index:10050; width:${6 + Math.random() * 10}px; height:${6 + Math.random() * 10}px; background:${colors[Math.floor(Math.random() * colors.length)]}; border-radius:${Math.random() > 0.6 ? "50%" : "2px"}; opacity:0.9; animation: fallConfettiF ${1.2 + Math.random() * 1.5}s linear forwards;`;
+            conf.style.cssText = `position:fixed; left:${Math.random() * 100}vw; top:-20px; pointer-events:none; z-index:10050; width:${6 + Math.random() * 10}px; height:${6 + Math.random() * 10}px; background:${colors[Math.floor(Math.random() * colors.length)]}; border-radius:${Math.random() > 0.6 ? "50%" : "2px"}; opacity:0.85; animation: fallConfettiF ${1.2 + Math.random() * 1.5}s linear forwards;`;
             document.body.appendChild(conf);
             setTimeout(() => conf.remove(), 2500);
           }
-          for (let i = 0; i < 12; i++) {
+
+          const heartCount = isMobile ? 8 : 14;
+          for (let i = 0; i < heartCount; i++) {
             const heart = document.createElement("div");
             heart.innerHTML = "💖";
-            heart.style.cssText = `position:fixed; left:${Math.random() * 100}vw; bottom:-20px; font-size:${18 + Math.random() * 24}px; pointer-events:none; z-index:10051; animation: floatHeartF 1.8s ease-out forwards;`;
+            heart.style.cssText = `position:fixed; left:${Math.random() * 100}vw; bottom:-20px; font-size:${16 + Math.random() * 22}px; pointer-events:none; z-index:10051; animation: floatHeartF 1.6s ease-out forwards;`;
             document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 1800);
+            setTimeout(() => heart.remove(), 1700);
           }
         }
 
+        // ========== SMILE ANIMATION ==========
         function setSmileTemporary() {
           if (smileTimeout) clearTimeout(smileTimeout);
           if (!isSmiling) {
@@ -804,13 +853,14 @@
             faceDiv.style.background =
               "radial-gradient(circle at 35% 30%, #ffda9e, #ffb145)";
             isSmiling = true;
-            unleashConfetti(40);
+            unleashConfetti(35);
+
             const blush = document.createElement("div");
             blush.innerText = "😳💛";
             blush.style.cssText =
-              "position:fixed; left:45%; top:35%; font-size:38px; pointer-events:none; z-index:10000; animation: fadeUpBlush 0.9s forwards;";
+              "position:fixed; left:45%; top:35%; font-size:36px; pointer-events:none; z-index:10000; animation: fadeUpBlush 0.85s forwards;";
             document.body.appendChild(blush);
-            setTimeout(() => blush.remove(), 900);
+            setTimeout(() => blush.remove(), 850);
           }
           smileTimeout = setTimeout(() => {
             if (isSmiling) {
@@ -823,27 +873,31 @@
           }, 2500);
         }
 
-        msgCardDiv.addEventListener("click", (e) => {
-          if (e.target !== editable && !editable.contains(e.target))
-            setSmileTemporary();
-        });
-        let lastMsg = editable.innerText;
-        editable.addEventListener("input", () => {
+        // Event untuk msg card & editable
+        if (msgCardDiv) {
+          msgCardDiv.addEventListener("click", (e) => {
+            if (e.target !== editable && !editable.contains(e.target))
+              setSmileTemporary();
+          });
+        }
+        let lastMsg = editable?.innerText || "";
+        editable?.addEventListener("input", () => {
           if (editable.innerText !== lastMsg) {
             lastMsg = editable.innerText;
             setSmileTemporary();
           }
         });
 
-        // NO button kabur (mobile friendly)
+        // ========== NO BUTTON KABUR (interval lebih halus & ramah mobile) ==========
         let noBtnInterval = null;
         function startEvadeNoButton() {
           if (noBtnInterval) clearInterval(noBtnInterval);
+          if (!noBtn) return;
           noBtn.style.position = "relative";
-          noBtn.style.transition = "left 0.07s linear, top 0.07s linear";
-          const modalCard = document.querySelector(".modal-card");
-          const maxWidth = 160;
-          const maxHeight = 100;
+          noBtn.style.transition = "left 0.12s ease-out, top 0.12s ease-out";
+          const maxWidth = isMobile ? 130 : 170;
+          const maxHeight = isMobile ? 90 : 120;
+
           function teleport() {
             if (!modalOverlay.classList.contains("show")) return;
             const randX = (Math.random() - 0.5) * maxWidth;
@@ -854,11 +908,13 @@
               "rotate(" + (Math.random() * 6 - 3) + "deg)";
           }
           teleport();
+          const intervalTime = isMobile ? 230 : 160;
           noBtnInterval = setInterval(() => {
             if (!modalOverlay.classList.contains("show")) return;
             teleport();
-          }, 110);
+          }, intervalTime);
         }
+
         function stopEvadeNoButton() {
           if (noBtnInterval) {
             clearInterval(noBtnInterval);
@@ -870,6 +926,7 @@
             noBtn.style.transform = "";
           }
         }
+
         function openModal() {
           modalOverlay.classList.add("show");
           startEvadeNoButton();
@@ -878,22 +935,24 @@
           modalOverlay.classList.remove("show");
           stopEvadeNoButton();
         }
-        openModalBtn.addEventListener("click", openModal);
-        openModalBtn.addEventListener("touchstart", openModal);
-        closeModalBtn.addEventListener("click", closeModal);
-        closeModalBtn.addEventListener("touchstart", closeModal);
 
-        // YES button
-        yesBtn.addEventListener("click", () => {
+        safeAddEvent(openModalBtn, "click", openModal);
+        safeAddEvent(closeModalBtn, "click", closeModal);
+
+        // ========== YES BUTTON ACTION ==========
+        function handleYes() {
           stopEvadeNoButton();
-          unleashConfetti(80);
-          for (let i = 0; i < 20; i++) {
+          unleashConfetti(isMobile ? 55 : 90);
+
+          const starCount = isMobile ? 14 : 24;
+          for (let i = 0; i < starCount; i++) {
             const star = document.createElement("div");
             star.innerHTML = "✨";
-            star.style.cssText = `position:fixed; left:${Math.random() * 100}vw; top:${Math.random() * 100}vh; font-size:${18 + Math.random() * 26}px; pointer-events:none; z-index:10060; animation: floatHeartF 1.3s forwards;`;
+            star.style.cssText = `position:fixed; left:${Math.random() * 100}vw; top:${Math.random() * 100}vh; font-size:${16 + Math.random() * 24}px; pointer-events:none; z-index:10060; animation: floatHeartF 1.3s forwards;`;
             document.body.appendChild(star);
             setTimeout(() => star.remove(), 1300);
           }
+
           const mantapDiv = document.createElement("div");
           mantapDiv.className = "mantap-toast";
           mantapDiv.innerHTML = "✨ MANTAP! ✨ 💛";
@@ -913,40 +972,39 @@
               "radial-gradient(circle at 35% 30%, #ffcf8a, #ffb562)";
             isSmiling = false;
           }, 3500);
+
           closeModal();
+
           const ucapan = document.createElement("div");
           ucapan.innerText = "🤗 kamu terbaik! (anjay, niat banget gweh) 💖";
           ucapan.style.cssText =
             "position:fixed; bottom:20%; left:50%; transform:translateX(-50%); background:#fff0cf; padding:8px 18px; border-radius:50px; font-weight:bold; z-index:10070; animation:fadeNotif 1.6s forwards; font-size:15px; white-space:nowrap;";
           document.body.appendChild(ucapan);
           setTimeout(() => ucapan.remove(), 1600);
-        });
-        yesBtn.addEventListener("touchstart", (e) => {
-          e.preventDefault();
-          yesBtn.click();
-        });
+        }
 
-        // NO button: tetap kabur dan jika somehow kena klik, pancing kabur
-        noBtn.addEventListener("click", (e) => {
+        safeAddEvent(yesBtn, "click", handleYes);
+
+        // ========== NO BUTTON: tetap kabur + tease ==========
+        function handleNoClick(e) {
           e.preventDefault();
           e.stopPropagation();
           const tease = document.createElement("div");
           tease.innerText = "😝 gabisa dipencet kok!";
           tease.style.cssText =
-            "position:fixed; top:30%; left:50%; background:#ffb485; padding:5px 14px; border-radius:30px; font-size:13px; z-index:10080; animation:fadeNotif 0.9s forwards;";
+            "position:fixed; top:30%; left:50%; background:#ffb485; padding:5px 14px; border-radius:30px; font-size:13px; z-index:10080; animation:fadeNotif 0.9s forwards; white-space:nowrap;";
           document.body.appendChild(tease);
           setTimeout(() => tease.remove(), 900);
-          const randX = (Math.random() - 0.5) * 180;
-          const randY = (Math.random() - 0.5) * 120;
+          const maxJump = isMobile ? 140 : 200;
+          const randX = (Math.random() - 0.5) * maxJump;
+          const randY = (Math.random() - 0.5) * (isMobile ? 90 : 130);
           noBtn.style.left = randX + "px";
           noBtn.style.top = randY + "px";
-        });
-        noBtn.addEventListener("touchstart", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          noBtn.click();
-        });
+        }
 
+        safeAddEvent(noBtn, "click", handleNoClick);
+
+        // ========== INITIAL SMILE ==========
         setTimeout(() => setSmileTemporary(), 600);
       })();
     </script>
