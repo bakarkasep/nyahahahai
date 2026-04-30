@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <title>web misterius</title>
+    <title>💛 Dimaafin ya? | Nisa</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
@@ -407,25 +407,119 @@
         }
       }
 
+      /* ========== TOMBOL DIMAAFIN DENGAN PANAH & INSTRUKSI ========== */
+      .btn-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+      }
+
       .btn-forgive {
         background: #ffd09c;
         border: 2px solid #482e1f;
-        padding: 12px 24px;
-        border-radius: 50px;
+        padding: 14px 32px;
+        border-radius: 60px;
         font-weight: 800;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        font-size: 16px;
+        gap: 12px;
+        font-size: 18px;
         color: #2d1f14;
         cursor: pointer;
-        box-shadow: 4px 5px 0 #7b4a2a;
+        box-shadow: 5px 6px 0 #7b4a2a;
         width: fit-content;
+        transition: all 0.1s ease;
+        position: relative;
+        z-index: 5;
       }
       .btn-forgive:active {
         transform: translate(2px, 2px);
         box-shadow: 2px 2px 0 #7b4a2a;
+      }
+
+      /* Animasi panah menunjuk tombol */
+      .arrow-pointer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: bounceArrow 1.2s ease-in-out infinite;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+      }
+      .arrow-text {
+        background: #ff8c5a;
+        color: white;
+        padding: 6px 16px;
+        border-radius: 40px;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+      .arrow-svg {
+        width: 50px;
+        height: 40px;
+        display: block;
+      }
+
+      @keyframes bounceArrow {
+        0%,
+        100% {
+          transform: translateY(0) translateX(0);
+        }
+        50% {
+          transform: translateY(8px) translateX(3px);
+        }
+      }
+
+      /* instruksi tambahan */
+      .instruction-hint {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 240, 220, 0.9);
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 11px;
+        color: #c27e4a;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+      }
+      .finger-icon {
+        font-size: 16px;
+        animation: tapWiggle 0.8s ease-in-out infinite;
+        display: inline-block;
+      }
+      @keyframes tapWiggle {
+        0%,
+        100% {
+          transform: rotate(0deg) scale(1);
+        }
+        25% {
+          transform: rotate(10deg) scale(1.1);
+        }
+        75% {
+          transform: rotate(-5deg) scale(1.05);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .btn-forgive {
+          padding: 12px 24px;
+          font-size: 16px;
+        }
+        .arrow-text {
+          font-size: 11px;
+          white-space: nowrap;
+        }
+        .arrow-svg {
+          width: 40px;
+          height: 32px;
+        }
       }
 
       /* MODAL */
@@ -715,7 +809,37 @@
           </div>
         </div>
 
-        <div class="btn-forgive" id="openModalBtn">🤍 "Dimaafin ya?" 💌</div>
+        <!-- TOMBOL DENGAN PANAH & INSTRUKSI -->
+        <div class="btn-wrapper">
+          <div class="arrow-pointer" id="arrowPointer">
+            <div class="arrow-text">✨ TEKAN TOMBOL INI ✨</div>
+            <svg class="arrow-svg" viewBox="0 0 50 40" fill="none">
+              <path
+                d="M25 0 L25 28 M25 28 L18 21 M25 28 L32 21"
+                stroke="#ff7e5e"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+              <circle
+                cx="25"
+                cy="33"
+                r="5"
+                fill="#ff8c5a"
+                stroke="#4a2c1a"
+                stroke-width="1.5"
+              />
+            </svg>
+          </div>
+          <div class="btn-forgive" id="openModalBtn">🤍 "Dimaafin ya?" 💌</div>
+          <div class="instruction-hint">
+            <span class="finger-icon">👇</span>
+            <span
+              >tekan tombol di atas untuk mengungkapkan permintaan maafmu</span
+            >
+          </div>
+        </div>
       </div>
     </div>
 
@@ -780,11 +904,12 @@
         const yesBtn = document.getElementById("yesBtn");
         const noBtn = document.getElementById("noBtn");
         const closeModalBtn = document.getElementById("closeModalBtn");
+        const arrowPointer = document.getElementById("arrowPointer");
 
         let isSmiling = false;
         let smileTimeout = null;
 
-        // ========== DESKTOP CURSOR (ONLY IF HOVER AVAILABLE) ==========
+        // ========== DESKTOP CURSOR ==========
         if (
           window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
           cursor
@@ -813,7 +938,7 @@
           });
         } else if (cursor) cursor.style.display = "none";
 
-        // ========== CONFETTI RINGAN (tidak overload di HP) ==========
+        // ========== CONFETTI RINGAN ==========
         function unleashConfetti(intensity = 50) {
           const count = isMobile
             ? Math.min(intensity, 22)
@@ -887,7 +1012,7 @@
           }
         });
 
-        // ========== NO BUTTON KABUR (interval lebih halus & ramah mobile) ==========
+        // ========== NO BUTTON KABUR ==========
         let noBtnInterval = null;
         function startEvadeNoButton() {
           if (noBtnInterval) clearInterval(noBtnInterval);
@@ -929,10 +1054,13 @@
         function openModal() {
           modalOverlay.classList.add("show");
           startEvadeNoButton();
+          // Sembunyikan panah saat modal terbuka agar tidak mengganggu
+          if (arrowPointer) arrowPointer.style.opacity = "0.3";
         }
         function closeModal() {
           modalOverlay.classList.remove("show");
           stopEvadeNoButton();
+          if (arrowPointer) arrowPointer.style.opacity = "1";
         }
 
         safeAddEvent(openModalBtn, "click", openModal);
@@ -1003,8 +1131,20 @@
 
         safeAddEvent(noBtn, "click", handleNoClick);
 
-        // ========== INITIAL SMILE ==========
+        // ========== INITIAL SMILE & PANAH ==========
         setTimeout(() => setSmileTemporary(), 600);
+
+        // Efek ekstra: panah berdenyut terus
+        if (arrowPointer) {
+          setInterval(() => {
+            if (modalOverlay.classList.contains("show")) return;
+            arrowPointer.style.animation = "none";
+            setTimeout(() => {
+              arrowPointer.style.animation =
+                "bounceArrow 1.2s ease-in-out infinite";
+            }, 10);
+          }, 3000);
+        }
       })();
     </script>
   </body>
